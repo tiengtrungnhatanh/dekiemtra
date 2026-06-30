@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đề thi HSK 6</title>
+<style>body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#f5f5f5;}
+.msg{text-align:center;color:#555;}</style>
+</head>
+<body>
+<div class="msg"><p>⏳ Đang tải đề thi HSK 6...</p><p style="font-size:12px;color:#999">Vui lòng chờ (~5-10 giây)</p></div>
+<script>
+(async function(){
+  try {
+    const resp = await fetch('hsk6.gz');
+    if(!resp.ok) throw new Error('Không tải được file: ' + resp.status);
+    const ds = new DecompressionStream('gzip');
+    const stream = resp.body.pipeThrough(ds);
+    const reader = stream.getReader();
+    const chunks = [];
+    while(true){const {done,value}=await reader.read();if(done)break;chunks.push(value);}
+    const blob = new Blob(chunks,{type:'text/html;charset=utf-8'});
+    const text = await blob.text();
+    document.open('text/html');
+    document.write(text);
+    document.close();
+  } catch(err) {
+    document.body.innerHTML = '<div style="padding:20px;color:red"><b>Lỗi tải đề thi:</b> ' + err.message + '</div>';
+  }
+})();
+</script>
+</body>
+</html>
