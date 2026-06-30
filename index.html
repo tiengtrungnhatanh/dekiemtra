@@ -97,83 +97,19 @@ lucide-react/dist/esm/icons/scroll-text.js:
 
 <script>
 (function() {
+  // Capture base path before React Router changes URL
   var BASE = window.location.pathname.replace(/\/[^\/]*$/, '/') || '/';
-  var examUrls = {
-    1: BASE + 'hsk1/index.html',
-    2: BASE + 'hsk2/index.html',
-    3: BASE + 'hsk3/index.html',
-    4: BASE + 'hsk4/index.html',
-    5: BASE + 'hsk5/index.html',
-    6: BASE + 'hsk6/index.html'
+
+  // Intercept React Router pushState to redirect directly to exam pages (no iframe)
+  var _origPush = history.pushState;
+  history.pushState = function(state, title, url) {
+    var m = String(url || '').match(/\/hsk([1-6])\/?(?:\?.*)?$/);
+    if (m) {
+      window.location.href = BASE + 'hsk' + m[1] + '/index.html';
+      return;
+    }
+    return _origPush.apply(history, arguments);
   };
-
-  function getLevelFromUrl() {
-    var hash = window.location.hash.match(/^#\/hsk([1-6])\/?$/);
-    if (hash) return Number(hash[1]);
-    var path = window.location.pathname.match(/\/hsk([1-6])\/?$/);
-    return path ? Number(path[1]) : null;
-  }
-
-  function injectExamIframe() {
-    var level = getLevelFromUrl();
-    if (!level) return;
-
-    var existing = document.getElementById('hsk-exam-iframe-wrap');
-    if (existing) {
-      var iframe = existing.querySelector('iframe');
-      if (iframe && iframe.getAttribute('src') === examUrls[level]) return;
-      existing.remove();
-    }
-
-    var examCard = document.querySelector('.exam-card');
-    if (!examCard) return;
-
-    var url = examUrls[level];
-    if (!url) return;
-
-    var wrap = document.createElement('div');
-    wrap.id = 'hsk-exam-iframe-wrap';
-    wrap.style.cssText = 'width:100%;';
-
-    var btnWrap = document.createElement('div');
-    btnWrap.style.cssText = 'padding:12px 16px;background:#fdf8ec;border-bottom:1px solid #e8d5a0;display:flex;align-items:center;gap:10px;';
-    var btn = document.createElement('a');
-    btn.href = url;
-    btn.target = '_blank';
-    btn.rel = 'noopener';
-    btn.style.cssText = 'display:inline-flex;align-items:center;gap:6px;background:#96700a;color:#fff;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;text-decoration:none;';
-    btn.textContent = '\u2197 M\u1EDF to\xE0n m\xE0n h\xECnh';
-    btnWrap.appendChild(btn);
-    wrap.appendChild(btnWrap);
-
-    var iframe = document.createElement('iframe');
-    iframe.src = url;
-    iframe.title = 'D\u1EC1 thi HSK ' + level;
-    iframe.style.cssText = 'width:100%;height:820px;border:none;display:block;';
-    iframe.setAttribute('allowfullscreen', '');
-    wrap.appendChild(iframe);
-
-    examCard.innerHTML = '';
-    examCard.style.padding = '0';
-    examCard.style.overflow = 'hidden';
-    examCard.appendChild(wrap);
-  }
-
-  var observer = new MutationObserver(function() { injectExamIframe(); });
-
-  function startObserver() {
-    var root = document.getElementById('root');
-    if (root) {
-      observer.observe(root, { childList: true, subtree: true });
-      injectExamIframe();
-    } else {
-      setTimeout(startObserver, 100);
-    }
-  }
-
-  window.addEventListener('popstate', function() { setTimeout(injectExamIframe, 150); });
-  document.addEventListener('DOMContentLoaded', startObserver);
-  if (document.readyState !== 'loading') startObserver();
 })();
 </script>
   </body>
