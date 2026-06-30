@@ -97,13 +97,14 @@ lucide-react/dist/esm/icons/scroll-text.js:
 
 <script>
 (function() {
+  var BASE = window.location.pathname.replace(/\/[^\/]*$/, '/') || '/';
   var examUrls = {
-    1: 'hsk1/index.html',
-    2: 'hsk2/index.html',
-    3: 'hsk3/index.html',
-    4: 'hsk4/index.html',
-    5: 'hsk5/index.html',
-    6: 'hsk6/index.html'
+    1: BASE + 'hsk1/index.html',
+    2: BASE + 'hsk2/index.html',
+    3: BASE + 'hsk3/index.html',
+    4: BASE + 'hsk4/index.html',
+    5: BASE + 'hsk5/index.html',
+    6: BASE + 'hsk6/index.html'
   };
 
   function getLevelFromUrl() {
